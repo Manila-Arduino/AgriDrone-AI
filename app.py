@@ -1,5 +1,7 @@
 import numpy as np
 from typing import List, Sequence
+
+from pydantic import BaseModel
 from classes.Arduino import Arduino
 from classes.BoxedObject import BoxedObject
 from classes.CNNImage import CNNImage
@@ -42,6 +44,13 @@ od_custom = OD_Custom(
     img_height=img_height,
     max_object_size_percent=0.80,
 )
+
+
+class AdminSettings(BaseModel):
+    id: str
+    quasar: bool
+    start_now: bool
+
 
 # ? -------------------------------- VARIABLES
 
