@@ -1,4 +1,8 @@
 {
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportOptionalMemberAccess": "none",
+        "reportAttributeAccessIssue": "none"
+    },
     "workbench.colorCustomizations": {
         "activityBar.activeBackground": "#6b28b5",
         "activityBar.background": "#6b28b5",
