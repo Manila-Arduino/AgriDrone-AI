@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from urllib.parse import urlparse
 import cv2
 from typing import Any, Literal, Callable, Tuple
 import uuid
@@ -27,13 +28,47 @@ class Video:
     window_name: str = "Capture"
     with_window: bool = True
     full_screen: bool = False
+    rtmp_url: str = ""
     # apiPreference: int = cv2.CAP_DSHOW
 
     def __post_init__(self):
         if not os.path.exists("captures"):
             os.makedirs("captures")
 
-        if PICAMERA2_AVAILABLE:
+        if self.rtmp_url:
+
+            def _open(url_try: str, is_rtmp: bool) -> cv2.VideoCapture:
+                if is_rtmp:
+                    os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = (
+                        "rtmp_buffer;0|timeout;5000000"
+                    )
+                else:
+                    os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = (
+                        "rtsp_transport;tcp|stimeout;5000000|max_delay;0"
+                    )
+                cap = cv2.VideoCapture(url_try, cv2.CAP_FFMPEG)
+                cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+                return cap
+
+            # Try RTMP first
+            self.cap = _open(self.rtmp_url, is_rtmp=True)
+
+            # Fallback to RTSP if RTMP fails
+            if not self.cap.isOpened():
+                p = urlparse(self.rtmp_url)
+                host = p.hostname or "127.0.0.1"
+                path = p.path or ""
+                rtsp_url = f"rtsp://{host}:8554{path}"
+                self.cap = _open(rtsp_url, is_rtmp=False)
+
+            if not self.cap.isOpened():
+                raise Exception(f"Error: Could not open stream from {self.rtmp_url}")
+
+            self.use_picamera = False
+            self.q = queue.Queue()
+            threading.Thread(target=self._reader, daemon=True).start()
+
+        elif PICAMERA2_AVAILABLE:
             self.picam2 = Picamera2()
             config = self.picam2.create_still_configuration(
                 main={"size": (self.width, self.height)}
@@ -143,7 +178,16 @@ class Video:
         cv2.imshow(self.window_name, img)  # type: ignore
 
     def release(self):
-        self.cap.release()
+        if hasattr(self, "_rtmp_cap") and self._rtmp_cap:
+            try:
+                self._rtmp_cap.release()
+            except Exception:
+                pass
+        if hasattr(self, "cap"):
+            try:
+                self.cap.release()
+            except Exception:
+                pass
         cv2.destroyAllWindows()
 
     def is_pressed(self, key: str) -> bool:
