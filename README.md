@@ -26,3 +26,5 @@ exit
    or
 1. conda create --prefix ./venv python=3.11.6 -y
 1. conda activate ./venv
+
+- pip list --format=freeze --not-required
