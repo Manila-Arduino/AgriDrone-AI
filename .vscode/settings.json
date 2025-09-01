@@ -1,5 +1,6 @@
 {
     "python.defaultInterpreterPath": "${workspaceFolder}\\venv\\Scripts\\activate.bat",
+    "window.zoomLevel": -2,
     "python.analysis.diagnosticSeverityOverrides": {
         "reportOptionalMemberAccess": "none",
         "reportAttributeAccessIssue": "none"
