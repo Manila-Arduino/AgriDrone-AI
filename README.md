@@ -13,8 +13,9 @@
 11. `call utils\autostart.bat`
 12. Remove display sleep
 13. Remove automatic updates
-14. Disable Task Manager / Startup
-15. TODO: Create autostart_chrome.bat {{url}}
+14. Turn off app notifs
+15. Disable apps in Task Manager -> Startup
+16. TODO: Create autostart_chrome.bat {{url}}
 
 @echo off
 start "" chrome --kiosk "https://sleep-device.web.app"
@@ -27,4 +28,4 @@ exit
 1. conda create --prefix ./venv python=3.11.6 -y
 1. conda activate ./venv
 
-- pip list --format=freeze --not-required
+- pip list --format=freeze --not-requir<Shed
