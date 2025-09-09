@@ -16,4 +16,5 @@
 14. Remove automatic updates
 15. Turn off app notifs
 16. Disable Task Manager / Startup
-17. Test Autostart
+17. Taskbar Right Click Settings -> Automatically hide the taskbar in desktop mode
+18. Test Autostart
