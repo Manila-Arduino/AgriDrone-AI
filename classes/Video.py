@@ -77,7 +77,7 @@ class Video:
             self.picam2.start()
             self.use_picamera = True
         else:
-            self.cap = cv2.VideoCapture(0)
+            self.cap = cv2.VideoCapture(self.cam_index, cv2.CAP_DSHOW)
             self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
