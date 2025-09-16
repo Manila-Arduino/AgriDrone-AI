@@ -1,0 +1,6 @@
+uv init {project_name}
+uv add/remove {package}
+uv run python app.py
+uv run {package} check
+
+uv sync {project_name}

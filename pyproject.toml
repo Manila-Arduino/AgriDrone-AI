@@ -1,0 +1,15 @@
+[project]
+name = "minicomp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "inquirerpy>=0.3.4",
+    "numpy>=2.3.3",
+    "opencv-python>=4.11.0.86",
+    "pydantic>=2.11.9",
+    "pynput>=1.8.1",
+    "pyserial>=3.5",
+    "tensorflow>=2.20.0",
+]
