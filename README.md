@@ -10,11 +10,12 @@
 8. Git clone {ssh_url} ai
 9. `cd ai`
 10. `uv sync`
-11. `a`
-12. `call utils\autostart.bat` and/or `call utils\autostart_website.bat`
-13. Remove display sleep
-14. Remove automatic updates
-15. Turn off app notifs
-16. Disable Task Manager / Startup
-17. Taskbar Right Click Settings -> Automatically hide the taskbar in desktop mode
-18. Test Autostart
+11. copy .env/credentials.json
+12. `a`
+13. `call utils\autostart.bat` and/or `call utils\autostart_website.bat`
+14. Remove display sleep
+15. Remove automatic updates
+16. Turn off app notifs
+17. Disable Task Manager / Startup
+18. Taskbar Right Click Settings -> Automatically hide the taskbar in desktop mode
+19. Test Autostart
