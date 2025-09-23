@@ -77,11 +77,14 @@ class Video:
             self.picam2.start()
             self.use_picamera = True
         else:
-            self.cap = cv2.VideoCapture(self.cam_index, cv2.CAP_DSHOW)
+            self.cap = cv2.VideoCapture(self.cam_index, cv2.CAP_V4L2)
             self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
             self.cap.set(cv2.CAP_PROP_FPS, 5)
+            print(self.cam_index)
+            print(self.cam_index)
+            print(self.cam_index)
             if not self.cap.isOpened():
                 raise Exception("Error: Could not open camera.")
             self.use_picamera = False
