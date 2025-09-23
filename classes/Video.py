@@ -22,7 +22,7 @@ except ImportError:
 
 @dataclass
 class Video:
-    cam_index: int = 0
+    cam_index: Any = 0
     width: int = 256
     height: int = 256
     window_name: str = "Capture"
