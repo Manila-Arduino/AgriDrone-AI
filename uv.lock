@@ -592,6 +592,7 @@ dependencies = [
     { name = "pynput" },
     { name = "pyserial" },
     { name = "python-dotenv" },
+    { name = "rich" },
     { name = "tensorflow" },
     { name = "ultralytics" },
 ]
@@ -605,6 +606,7 @@ requires-dist = [
     { name = "pynput", specifier = ">=1.8.1" },
     { name = "pyserial", specifier = ">=3.5" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
+    { name = "rich", specifier = ">=14.1.0" },
     { name = "tensorflow", specifier = ">=2.20.0" },
     { name = "ultralytics", specifier = ">=8.3.200" },
 ]
