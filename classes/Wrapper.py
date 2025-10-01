@@ -1,7 +1,7 @@
 from typing import Callable, List, Optional, Tuple
 from pynput.keyboard import Listener, Key
 
-from classes.Rich import Rich
+from classes.p import P
 
 
 class Wrapper:
@@ -46,4 +46,4 @@ class Wrapper:
             self.onExit()
         self.listener.stop()
 
-        Rich.print("Exiting...", style="danger")
+        P("Exiting...", "rb")

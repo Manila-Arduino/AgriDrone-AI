@@ -1,28 +1,29 @@
 {
-    "python.defaultInterpreterPath": "${workspaceFolder}\\venv\\Scripts\\activate.bat",
-    "window.zoomLevel": -2,
-    "python.analysis.diagnosticSeverityOverrides": {
-        "reportOptionalMemberAccess": "none",
-        "reportAttributeAccessIssue": "none"
-    },
-    "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#6b28b5",
-        "activityBar.background": "#6b28b5",
-        "activityBar.foreground": "#e7e7e7",
-        "activityBar.inactiveForeground": "#e7e7e799",
-        "activityBarBadge.background": "#1a0f06",
-        "activityBarBadge.foreground": "#e7e7e7",
-        "commandCenter.border": "#e7e7e799",
-        "sash.hoverBorder": "#6b28b5",
-        "statusBar.background": "#521f8b",
-        "statusBar.foreground": "#e7e7e7",
-        "statusBarItem.hoverBackground": "#6b28b5",
-        "statusBarItem.remoteBackground": "#521f8b",
-        "statusBarItem.remoteForeground": "#e7e7e7",
-        "titleBar.activeBackground": "#521f8b",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveBackground": "#521f8b99",
-        "titleBar.inactiveForeground": "#e7e7e799"
-    },
-    "peacock.color": "#521F8BFF"
+  "python.defaultInterpreterPath": "${workspaceFolder}\\venv\\Scripts\\activate.bat",
+  "window.zoomLevel": -2,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportOptionalMemberAccess": "none",
+    "reportAttributeAccessIssue": "none",
+    "reportUnusedFunction": "none"
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#6b28b5",
+    "activityBar.background": "#6b28b5",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#1a0f06",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#6b28b5",
+    "statusBar.background": "#521f8b",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#6b28b5",
+    "statusBarItem.remoteBackground": "#521f8b",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#521f8b",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#521f8b99",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.color": "#521F8BFF"
 }
