@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "gpiozero>=2.0.1",
     "inquirerpy>=0.3.4",
     "numpy>=2.3.3",
     "opencv-python>=4.11.0.86",
