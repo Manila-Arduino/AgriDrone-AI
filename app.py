@@ -9,7 +9,6 @@ from classes.OD_Custom import OD_Custom
 from classes.OD_Default import OD_Default
 from classes.Video import Video
 from classes.Wrapper import Wrapper
-from classes.rpi.rpi import RPI
 
 MatLike = np.ndarray
 
@@ -24,7 +23,6 @@ arduino_port = ""
 
 
 # ? -------------------------------- CLASSES
-rpi = RPI()
 arduino = Arduino(arduino_port)
 video = Video(cam_index, img_width, img_height)
 cnn = CNNImage(
