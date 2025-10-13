@@ -45,7 +45,7 @@ od_custom = OD_Custom(
     max_object_size_percent=0.80,
 )
 yolo = YoloV11nSeg(
-    "plants.tflite",
+    "plants.pt",
     [("plant", (255, 0, 0))],
     threshold=0.5,
     img_width=img_width,
