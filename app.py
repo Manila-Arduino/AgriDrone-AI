@@ -105,9 +105,10 @@ def loop():
     img2 = od_custom.detect(img, on_od_receive=on_od_receive)
 
     #! INSTANCE SEGMENTATION
-    img = yolo.detect(img, on_yolov11n_seg_receive=on_yolo_predict)
+    yolo.detect(img, on_yolov11n_seg_receive=on_yolo_predict)
 
     #! DISPLAY VIDEO
+    yolo.display(img)
     video.displayImg(img)
 
     #! ARDUINO
