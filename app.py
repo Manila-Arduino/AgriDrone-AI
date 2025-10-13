@@ -7,8 +7,10 @@ from classes.BoxedObject import BoxedObject
 from classes.CNNImage import CNNImage
 from classes.OD_Custom import OD_Custom
 from classes.OD_Default import OD_Default
+from classes.SegmentedObject import SegmentedObject
 from classes.Video import Video
 from classes.Wrapper import Wrapper
+from classes.Yolov11nSeg import YoloV11nSeg
 
 MatLike = np.ndarray
 
@@ -42,6 +44,15 @@ od_custom = OD_Custom(
     img_height=img_height,
     max_object_size_percent=0.80,
 )
+yolo = YoloV11nSeg(
+    "plants.tflite",
+    [("plant", (255, 0, 0))],
+    threshold=0.5,
+    img_width=img_width,
+    img_height=img_height,
+    max_object_size_percent=1.0,
+    allowed=["plant"],
+)
 
 
 class AdminSettings(BaseModel):
@@ -60,6 +71,11 @@ def on_cnn_predict(predicted_class: str, confidence: float):
 
 
 def on_od_receive(max_object: BoxedObject, results: Sequence[BoxedObject]):
+    # TODO 3 ------------------------------------------------
+    pass
+
+
+def on_yolo_predict(max_object: SegmentedObject, results: Sequence[SegmentedObject]):
     # TODO 3 ------------------------------------------------
     pass
 
@@ -87,6 +103,9 @@ def loop():
     #! OBJECT DETECTION
     img = od_default.detect(img, on_od_receive=on_od_receive)
     img2 = od_custom.detect(img, on_od_receive=on_od_receive)
+
+    #! INSTANCE SEGMENTATION
+    img = yolo.detect(img, on_yolov11n_seg_receive=on_yolo_predict)
 
     #! DISPLAY VIDEO
     video.displayImg(img)
