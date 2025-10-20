@@ -130,6 +130,6 @@ Wrapper(
     loop,
     onExit=onExit,
     keyboardEvents=[
-        ["d", video.save_image],  # type: ignore
+        # ["d", video.save_image],  # type: ignore
     ],
 )
