@@ -2,7 +2,8 @@
 from typing import Callable, List, Optional
 import cv2
 import numpy as np
-from ultralytics import YOLO
+
+from ultralytics import YOLO  # type: ignore
 from classes.ClassificationObject import ClassificationObject
 
 MatLike = np.ndarray
@@ -31,7 +32,7 @@ class Yolov11nCls:
     ) -> None:
         r = self.model.predict(
             source=img,
-            imgsz=(self.img_width, self.img_height),
+            imgsz=(self.img_height, self.img_width),
             save=False,
             verbose=False,
         )[0]

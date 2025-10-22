@@ -5,11 +5,11 @@ import numpy as np
 import mss
 from typing import Callable
 import cv2
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import Qt, QRect, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtCore import Qt, QRect, pyqtSignal
+from PyQt6.QtGui import QPainter, QPen, QBrush, QColor
 import sys
-from classes.FolderHelper import FolderHelper
+from classes.folder_helper import FolderHelper
 
 
 class ScreenCapture:
@@ -42,6 +42,21 @@ class ScreenCapture:
         self.overlay.show()
 
         keyboard.add_hotkey("q", self._set_exit_flag)
+
+    def capture(self):
+        with mss.mss() as sct:
+            img = np.array(
+                sct.grab(
+                    {
+                        "top": self.top,
+                        "left": self.left,
+                        "width": self.width,
+                        "height": self.height,
+                    }
+                )
+            )
+            frame = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+            return frame
 
     def _loop(self, func: Callable):
         with mss.mss() as sct:
@@ -85,6 +100,12 @@ class ScreenCapture:
 
         cv2.destroyAllWindows()
         self.overlay_app.quit()
+        cv2.destroyAllWindows()
+        try:
+            self.overlay.close()
+        except Exception:
+            pass
+        self.overlay_app.quit()
         print("Done Capturing!")
 
     def loop(self, func: Callable):
@@ -92,7 +113,11 @@ class ScreenCapture:
         self.overlay_thread.daemon = True
         self.overlay_thread.start()
 
-        sys.exit(self.overlay_app.exec_())
+        # sys.exit(self.overlay_app.exec())
+
+    def pump_events(self):
+        # Call this each iteration of your Wrapper loop
+        self.overlay_app.processEvents()
 
 
 class RedSquareOverlay(QMainWindow):
@@ -101,29 +126,82 @@ class RedSquareOverlay(QMainWindow):
     def __init__(self, left=300, top=100, width=200, height=400):
         super().__init__()
         self.boundary_thickness = 8
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-        self.setAttribute(Qt.WA_TransparentForMouseEvents)
-        self.setAttribute(Qt.WA_NoSystemBackground)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(
+            Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint
+        )
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setWindowOpacity(1)  # Adjust transparency if needed
+        self.label_height = 30
 
         # Define the boundary position and size
         self.boundary = QRect(
             left - self.boundary_thickness // 2,
-            top - self.boundary_thickness // 2,
+            top - self.boundary_thickness // 2 - self.label_height,
             width + self.boundary_thickness,
             height + self.boundary_thickness,
         )
         self.setGeometry(self.boundary)
+        self.pred_text = ""
 
-    def paintEvent(self, event):
-        # Draw the red boundary
+    def update_text(self, text: str):
+        self.pred_text = text
+        self.update()
+
+    def paintEvent(self, a0):
+        #! RED BORDER
         painter = QPainter(self)
-        pen = QPen(Qt.red, self.boundary_thickness)
+        pen = QPen(Qt.GlobalColor.red, self.boundary_thickness)
         painter.setPen(pen)
-        painter.drawRect(self.rect())
+        painter.drawRect(self.rect().adjusted(0, self.label_height, 0, 0))
 
-    def keyPressEvent(self, event):
-        if event.key() == ord("Q"):  # Check if the key pressed is 'q'
+        #! YELLOW BORDER
+        pen = QPen(Qt.GlobalColor.yellow, self.boundary_thickness)
+        painter.setPen(pen)
+        painter.drawRect(
+            self.rect().adjusted(
+                0,
+                0,
+                0,
+                -self.height() + self.label_height,
+            )
+        )
+
+        #! PREDICTION TEXT
+        if self.pred_text:
+            font = painter.font()
+            font.setPointSize(14)
+            font.setBold(True)
+            painter.setFont(font)
+            # painter.setPen(QColor(255, 255, 255))  # white text
+            # painter.setBrush(QBrush(QColor(0, 0, 0, 160)))  # semi-transparent bg
+            # text_rect = self.rect().adjusted(0, -30, 0, -self.height() + 30)
+            # painter.drawRect(text_rect)
+            # painter.drawText(text_rect, Qt.AlignmentFlag.AlignCenter, self.pred_text)
+            font = painter.font()
+            font.setPointSize(13)
+            font.setBold(True)
+            painter.setFont(font)
+
+            painter.setPen(Qt.PenStyle.NoPen)
+            bg = QRect(
+                self.boundary_thickness // 2,  # x
+                self.boundary_thickness,  # y (just under the red border)
+                self.width() - self.boundary_thickness,  # w
+                self.label_height - self.boundary_thickness,  # h
+            )
+            painter.setBrush(QColor(20, 20, 20, 180))  # sleek semi-transparent
+            painter.drawRoundedRect(bg, 0, 0)
+
+            painter.setPen(QColor(255, 255, 255))  # white text
+            painter.drawText(
+                bg.adjusted(10, -2, 0, 0),
+                Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft,
+                self.pred_text,
+            )
+
+    def keyPressEvent(self, a0):
+        if a0.key() == Qt.Key.Key_Q:
             self.quit_signal.emit()
             # QApplication.quit()  # Quit the application
