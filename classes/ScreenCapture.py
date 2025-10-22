@@ -37,7 +37,7 @@ class ScreenCapture:
 
         #! Initialize the overlay
         self.overlay_app = QApplication(sys.argv)
-        self.overlay = RedSquareOverlay()
+        self.overlay = RedSquareOverlay(left, top, width, height)
         self.overlay.quit_signal.connect(self.cleanup)
         self.overlay.show()
 
@@ -98,7 +98,7 @@ class ScreenCapture:
 class RedSquareOverlay(QMainWindow):
     quit_signal = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, left=300, top=100, width=200, height=400):
         super().__init__()
         self.boundary_thickness = 8
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
@@ -109,10 +109,10 @@ class RedSquareOverlay(QMainWindow):
 
         # Define the boundary position and size
         self.boundary = QRect(
-            300 - self.boundary_thickness // 2,
-            100 - self.boundary_thickness // 2,
-            200 + self.boundary_thickness,
-            400 + self.boundary_thickness,
+            left - self.boundary_thickness // 2,
+            top - self.boundary_thickness // 2,
+            width + self.boundary_thickness,
+            height + self.boundary_thickness,
         )
         self.setGeometry(self.boundary)
 
