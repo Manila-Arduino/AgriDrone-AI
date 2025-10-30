@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "firebase-admin>=7.1.0",
     "gpiozero>=2.0.1",
     "inquirerpy>=0.3.4",
     "keyboard>=0.13.5",
