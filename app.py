@@ -70,7 +70,7 @@ class DataBox(BaseModel):
 
 class DataBoxes(BaseModel):
     id: Literal["boxes"]
-    boxes: List[DataBox]
+    boxes: List["DataBox"]
 
 
 # ? -------------------------------- VARIABLES
