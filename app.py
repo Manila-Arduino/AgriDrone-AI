@@ -102,10 +102,10 @@ def _overlaps(a, b) -> bool:
 
 def generate_box(
     boxes: List[DataBox],
-    min_area: float = 0.05,
-    max_area: float = 0.25,
+    min_area: float = 0.02,
+    max_area: float = 0.10,
     max_tries: int = 5000,
-    label: str = "new",
+    label: str = "Healthy",
 ) -> List[DataBox]:
     """
     Generate one random YOLO-format box (normalized xc,yc,w,h in [0,1]) that:
@@ -169,7 +169,7 @@ def on_yolov11n_cls_receive(prediction: Optional[ClassificationObject]) -> None:
         if data_boxes is None:
             data_boxes = DataBoxes(id="boxes", boxes=[])
 
-        boxes = generate_box(data_boxes.boxes)
+        boxes = generate_box(data_boxes.boxes, label=prediction.entity)
         firebase.write_firestore(
             f"data/boxes",
             DataBoxes(
