@@ -3,7 +3,7 @@ import shutil
 import subprocess
 from typing import List, Literal
 
-from automation.path import Path
+from classes.path import Path
 
 
 class FolderHelper:
