@@ -39,6 +39,7 @@ height = int(os.getenv("height", 800))
 img_width = width
 img_height = height
 
+# input_source = "screen"
 input_source = "video"
 TESTING = True
 
@@ -73,13 +74,6 @@ elif input_source == "video":  # type: ignore
     img_width = width
     img_height = height
 
-    capture_source = Video(
-        cam_index=cam_index,
-        width=width,
-        height=height,
-        with_window=True,
-        stream_url=stream_url,
-    )
     if TESTING:
         capture_source = Video(
             cam_index=cam_index,
@@ -98,7 +92,7 @@ elif input_source == "video":  # type: ignore
 else:
     raise ValueError("INPUT_SOURCE must be either 'screen' or 'video'")
 
-screen_capture = ScreenCapture(left, top, width, height, will_record=False)
+# screen_capture = ScreenCapture(left, top, width, height, will_record=False)
 
 
 yolo = Yolov11nCls(
@@ -130,7 +124,7 @@ class DataBox(BaseModel):
 
 class DataBoxes(BaseModel):
     id: Literal["boxes"]
-    boxes: List["DataBox"]
+    boxes: List[DataBox]
 
 
 # ? -------------------------------- VARIABLES
@@ -228,19 +222,24 @@ def on_yolov11n_cls_receive(prediction: Optional[ClassificationObject]) -> None:
 
     if will_save:
         will_save = False
+
+        P("SAVE: reading firestore...", "y")
         data_boxes = firebase.read_firestore("data/boxes", DataBoxes)
+        P("SAVE: read done", "g")
 
         if data_boxes is None:
             data_boxes = DataBoxes(id="boxes", boxes=[])
 
+        P("SAVE: generating box...", "y")
         boxes = generate_box(data_boxes.boxes, label=prediction.entity)
+        P("SAVE: writing firestore...", "y")
+
         firebase.write_firestore(
-            f"data/boxes",
-            DataBoxes(
-                id="boxes",
-                boxes=boxes,
-            ),
+            "data/boxes",
+            DataBoxes(id="boxes", boxes=boxes),
         )
+
+        P("SAVE: write done", "g")
 
 
 # ? -------------------------------- SETUP

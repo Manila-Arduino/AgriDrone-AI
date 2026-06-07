@@ -13,27 +13,32 @@ class Firebase:
     def __init__(
         self,
         credentials_filepath: str,
+        project_id: str = "",
         use_storage=False,
         use_firestore=False,
         storage_bucket="",
     ):
         self.cred = credentials.Certificate(credentials_filepath)
-        initialize_app(
-            self.cred,
-            {"storageBucket": storage_bucket} if use_storage else None,
-        )
-        self.db = firestore.client() if use_firestore else None
+        opts = {}
+        if project_id:
+            opts["projectId"] = project_id
+        if use_storage and storage_bucket:
+            opts["storageBucket"] = storage_bucket
+
+        if project_id:
+            self.app = initialize_app(self.cred, opts, name=project_id)
+        elif len(opts.keys()) > 0:
+            self.app = initialize_app(self.cred, opts)
+        else:
+            self.app = initialize_app(self.cred)
+
+        self.db = firestore.client(app=self.app) if use_firestore else None
 
     #! STORAGE
-    def upload_storage(
-        self, file_path: str, destination_blob_name: str, make_public=True
-    ):
-        bucket = storage.bucket()
+    def upload_storage(self, file_path: str, destination_blob_name: str):
+        bucket = storage.bucket(app=self.app)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(file_path)
-        if make_public:
-            blob.make_public()
-
         return blob.public_url
 
     #! FIRESTORE
