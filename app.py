@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from classes.firebase_helper import Firebase
 from classes.p import P
+import socket
 
 load_dotenv()
 
@@ -19,6 +20,7 @@ from typing import List, Literal, Optional, Sequence, Tuple
 from pydantic import BaseModel
 from classes.Wrapper import Wrapper
 import logging
+from classes.Video import Video
 
 logging.getLogger("ultralytics").setLevel(logging.ERROR)
 
@@ -37,7 +39,65 @@ height = int(os.getenv("height", 800))
 img_width = width
 img_height = height
 
+input_source = "video"
+TESTING = True
+
+
 # ? -------------------------------- CLASSES
+def get_ip_default_route() -> str:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))  # no packets actually sent
+        return s.getsockname()[0]
+    finally:
+        s.close()
+
+
+if input_source == "screen":  # type: ignore
+    left = int(os.getenv("left", 700))
+    top = int(os.getenv("top", 200))
+    width = int(os.getenv("width", 400))
+    height = int(os.getenv("height", 800))
+
+    img_width = width
+    img_height = height
+
+    capture_source = ScreenCapture(left, top, width, height, will_record=False)
+
+elif input_source == "video":  # type: ignore
+    cam_index = int(os.getenv("CAM_INDEX", 0))
+    width = int(os.getenv("VIDEO_WIDTH", 1280))
+    height = int(os.getenv("VIDEO_HEIGHT", 720))
+    stream_url = os.getenv("STREAM_URL", "")
+
+    img_width = width
+    img_height = height
+
+    capture_source = Video(
+        cam_index=cam_index,
+        width=width,
+        height=height,
+        with_window=True,
+        stream_url=stream_url,
+    )
+    if TESTING:
+        capture_source = Video(
+            cam_index=cam_index,
+            width=img_width,
+            height=img_height,
+        )
+    else:
+        capture_source = Video(
+            cam_index=cam_index,
+            width=img_width,
+            height=img_height,
+            stream_url=f"rtmp://{get_ip_default_route()}/live/key",
+        )
+
+
+else:
+    raise ValueError("INPUT_SOURCE must be either 'screen' or 'video'")
+
 screen_capture = ScreenCapture(left, top, width, height, will_record=False)
 
 
@@ -158,7 +218,11 @@ def on_yolov11n_cls_receive(prediction: Optional[ClassificationObject]) -> None:
     if prediction is None:
         return
 
-    screen_capture.overlay.update_text(f"{prediction.entity} ({prediction.score:.2f})")
+    if input_source == "screen":
+        capture_source.overlay.update_text(
+            f"{prediction.entity} ({prediction.score:.2f})"
+        )
+
     P(f"CLS: ", "g", end="")
     P(f"{prediction.entity}, {prediction.score:.2f}")
 
@@ -188,17 +252,22 @@ def setup():
 def loop():
     global img
 
-    #! VIDEO
-    img = screen_capture.capture()
+    if input_source == "screen":
+        img = capture_source.capture()  # type: ignore
+    else:
+        img = capture_source.capture(display=False)  # type: ignore
 
-    #! YOLO IMAGE CLASSIFICATION
+    if img is None:
+        return
+
     yolo.detect(img, on_yolov11n_cls_receive=on_yolov11n_cls_receive)
 
-    #! DISPLAY LABEL
-    # yolo.display(img)
+    if input_source == "video":
+        img = yolo.display(img)
+        capture_source.displayImg(img)
 
-    #! PROCESS EVENTS
-    screen_capture.pump_events()
+    if input_source == "screen":
+        capture_source.pump_events()
 
 
 # ? -------------------------------- ETC
@@ -206,7 +275,10 @@ setup()
 
 
 def onExit():
-    pass
+    if input_source == "screen":
+        capture_source.cleanup()
+    else:
+        capture_source.release()
 
 
 Wrapper(
@@ -214,7 +286,7 @@ Wrapper(
     onExit=onExit,
     keyboardEvents=[
         ("s", save_box),
-        ("q", screen_capture.cleanup),
+        ("q", onExit),
         # ("d", video.save_image),  # type: ignore
     ],
 )
