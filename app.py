@@ -42,7 +42,7 @@ img_height = height
 
 # input_source = "screen"
 input_source = "video"
-TESTING = False
+TESTING = os.getenv("TESTING", "False").lower() == "true"
 
 
 # ? -------------------------------- CLASSES
