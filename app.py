@@ -42,7 +42,7 @@ img_height = height
 
 # input_source = "screen"
 input_source = "video"
-TESTING = True
+TESTING = False
 
 
 # ? -------------------------------- CLASSES
