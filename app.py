@@ -4,6 +4,7 @@ import os
 import random
 from dotenv import load_dotenv
 
+from classes.DH import DH
 from classes.firebase_helper import Firebase
 from classes.p import P
 import socket
@@ -98,7 +99,7 @@ else:
 yolo = Yolov11nCls(
     "best.pt",
     [
-        "Asian Corn Border worm",
+        "Asian Corn Borer worm",
         "Ear rot Grade 0",
         "Ear rot Grade 1",
         "Ear rot Grade 2",
@@ -111,7 +112,12 @@ yolo = Yolov11nCls(
     img_width=img_width,
     img_height=img_height,
 )
-firebase = Firebase("credentials.json", use_storage=False, use_firestore=True)
+firebase = Firebase(
+    "credentials.json",
+    use_storage=True,
+    use_firestore=True,
+    storage_bucket="agri-drone-pole.firebasestorage.app",
+)
 
 
 class DataBox(BaseModel):
@@ -238,6 +244,23 @@ def on_yolov11n_cls_receive(prediction: Optional[ClassificationObject]) -> None:
             "data/boxes",
             DataBoxes(id="boxes", boxes=boxes),
         )
+
+        #! SAVE IMAGE
+        P("SAVE: capturing image...", "y")
+        local_img_filename = f"temp_drone_img"
+        id = DH.to_YYYY()
+        firebase_img_path = rf"pictures/{id}.jpg"
+        capture_source.save_image(local_img_filename)
+        # save to firebase storage and get public URL
+        img_url = firebase.upload_storage(
+            f"captures/{local_img_filename}.jpg", firebase_img_path
+        )
+        P(f"SAVE: image uploaded to {img_url}", "g")
+        firebase.write_firestore(
+            f"images/{id}",
+            {"id": id, "url": img_url, "timestamp": datetime.now(timezone.utc)},
+        )
+        P(f"SAVE: firestore updated with image metadata", "g")
 
         P("SAVE: write done", "g")
 
